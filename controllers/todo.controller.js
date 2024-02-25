@@ -4,11 +4,16 @@ const Todo = require("../models/todo.model.js");
 // Create a new task
 const createTodo = async (req, res) => {
   try {
-    const { title, priority, dueDate } = req.body;
+    const { title,task, priority, dueDate } = req.body;
+    
+    const userId = req.user.userId;
+    // console.log(userId);
     const newTask = new Todo({
       title,
+      task,
       priority,
-      dueDate
+      dueDate,
+      user:userId
     });
     const savedTask = await newTask.save();
     res.status(201).json(savedTask);
@@ -21,6 +26,18 @@ const createTodo = async (req, res) => {
 const getAllTasks = async (req, res) => {
   try {
     const tasks = await Todo.find();
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//get all task of single user
+const getAllTasksOfSingleUser = async (req, res) => {
+  const userId = req.params.id; 
+
+  try {
+    const tasks = await Todo.find({ user: userId }); 
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -119,5 +136,6 @@ module.exports = {
   getSingleTask,
   updateTask,
   deleteTask,
-  filterTasksByDueDate
+  filterTasksByDueDate,
+  getAllTasksOfSingleUser
 };

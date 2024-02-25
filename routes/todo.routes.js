@@ -1,4 +1,6 @@
 const router =require("express").Router();
+const {verifyToken} =require("../middleware/verifyToken");
+
 
 const {
     createTodo,
@@ -6,12 +8,14 @@ const {
     getSingleTask,
     updateTask,
     deleteTask,
-    filterTasksByDueDate
+    filterTasksByDueDate,
+    getAllTasksOfSingleUser
 } =require("../controllers/todo.controller");
 
 
-router.post("/add",createTodo);
+router.post("/add",verifyToken,createTodo);
 router.get("/getall",getAllTasks);
+router.get("/getall/:id",verifyToken,getAllTasksOfSingleUser);
 router.get("/getone/:id",getSingleTask);
 router.patch("/update/:id",updateTask);
 router.delete("/delete/:id",deleteTask);

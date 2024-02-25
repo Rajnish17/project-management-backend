@@ -1,14 +1,14 @@
-const User =require("../models/user.model");
+const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
 //register controller here
 const registerUser = async (req, res) => {
-    const { fullName, email,password } = req.body;
+    const { fullName, email, password } = req.body;
 
     // Check if any of the required parameters are missing
-    if (!fullName  || !email || !password) {
+    if (!fullName || !email || !password) {
         return res.status(400).json({
             success: false,
             message: "Please provide all required details",
@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
         }
 
         // Hash the user's password before saving it to the database
-        const saltRounds = 10; 
+        const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Create a new user instance with the hashed password
@@ -101,19 +101,19 @@ const loginUser = async (req, res) => {
             {
                 userId: user._id,
                 email: user.email,
-                
+
             },
             process.env.JWT_SECRET,
             {
                 expiresIn: "7d",
             }
         );
-        
-    
+
+
         res.status(200).json({
             success: true,
             message: "Login successful",
-            data:{user,token}
+            data: { user, token }
         });
     } catch (error) {
         console.error(error);
@@ -125,66 +125,99 @@ const loginUser = async (req, res) => {
     }
 };
 
+//update user details controller here
 const updateUserDetails = async (req, res) => {
-    const { fullName, email, password, oldPassword } = req.body;
+    const { fullName, oldPassword, newPassword } = req.body;
     const userId = req.params.id;
 
     try {
-        // Update user details
-        const updateFields = {};
-        if (fullName) updateFields.fullName = fullName;
-        if (email) updateFields.email = email;
-
-        if (oldPassword && password) {
-            // Check if the old password matches
-            const existingUser = await User.findById(userId);
-            if (!existingUser) {
-                return res.status(404).json({
-                    success: false,
-                    message: "User not found"
-                });
-            }
-
-            const isPasswordMatch = await bcrypt.compare(oldPassword, existingUser.password);
-            if (!isPasswordMatch) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Old password does not match"
-                });
-            }
-
-            // Hash the new password
-            const hashedPassword = await bcrypt.hash(password, 10);
-            updateFields.password = hashedPassword;
-        }
-
-        // Find by id and update
-        const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
-
-        if (!updatedUser) {
+        const user = await User.findById(userId);
+        if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User not found"
+                message: 'User not found',
             });
         }
 
+        if (newPassword !== undefined) {
+            // Check if old password is provided
+            if (!oldPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Old password is required for password update.',
+                });
+            }
+            // Check if the old password matches
+            const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+            if (!isPasswordMatch) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Old password is incorrect',
+                });
+            }
+            // Update the password
+            const saltRounds = 10;
+            user.password = await bcrypt.hash(newPassword, saltRounds);
+        }
+
+        if (fullName !== undefined && fullName.trim() !== '') {
+            user.fullName = fullName;
+        }
+
+        await user.save();
+
         res.status(200).json({
             success: true,
-            message: "User details updated successfully",
-            user: updatedUser
+            message: 'User updated successfully',
+            user: user,
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
             success: false,
-            message: "Internal server error",
-            error: error
+            message: 'Internal server error',
+            error: error,
         });
     }
 };
 
-module.exports={
+//get One User Details
+const getOneUser = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        // Return the user data
+        res.status(200).json({
+            success: true,
+            user: user,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error,
+        });
+    }
+};
+
+
+
+
+module.exports = {
     registerUser,
     loginUser,
-    updateUserDetails
+    updateUserDetails,
+    getOneUser
 }
