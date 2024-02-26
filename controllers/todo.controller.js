@@ -23,7 +23,7 @@ const createTodo = async (req, res) => {
 };
 
 // Get all tasks
-const getAllTasks = async (req, res) => {
+const getAllTodo = async (req, res) => {
   try {
     const tasks = await Todo.find();
     res.json(tasks);
@@ -33,7 +33,7 @@ const getAllTasks = async (req, res) => {
 };
 
 //get all task of single user
-const getAllTasksOfSingleUser = async (req, res) => {
+const getAllTodoOfSingleUser = async (req, res) => {
   const userId = req.params.id; 
 
   try {
@@ -44,38 +44,42 @@ const getAllTasksOfSingleUser = async (req, res) => {
   }
 };
 
-// Get a single task
-const getSingleTask = async (req, res) => {
+// Get a single task on share
+const getShareTodo = async (req, res) => {
   try {
     const task = await Todo.findById(req.params.id);
     if (task == null) {
       return res.status(404).json({ message: 'Task not found' });
     }
-    res.json(task);
+  
+    res.json({ task});
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-// Update a task
-const updateTask = async (req, res) => {
+// Update a todo
+const updateTodo = async (req, res) => {
   try {
-    const task = await Todo.findById(req.params.id);
-    if (task == null) {
-      return res.status(404).json({ message: 'Task not found' });
+    const todo = await Todo.findById(req.params.id);
+    if (todo == null) {
+      return res.status(404).json({ message: 'Todo not found' });
     }
 
     if (req.body.title != null) {
-      task.title = req.body.title;
+      todo.title = req.body.title;
+    }
+    if (req.body.task != null) {
+      todo.task = req.body.task;
     }
     if (req.body.priority != null) {
-      task.priority = req.body.priority;
+      todo.priority = req.body.priority;
     }
     if (req.body.dueDate != null) {
-      task.dueDate = req.body.dueDate;
+      todo.dueDate = req.body.dueDate;
     }
 
-    const updatedTask = await task.save();
+    const updatedTask = await todo.save();
     res.json(updatedTask);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -83,22 +87,21 @@ const updateTask = async (req, res) => {
 };
 
 // Delete a task
-const deleteTask = async (req, res) => {
+const deleteTodo = async (req, res) => {
   try {
-    const task = await Todo.findById(req.params.id);
-    if (task == null) {
+    const task = await Todo.findByIdAndDelete(req.params.id);
+    if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    await task.remove();
-    res.json({ message: 'Task deleted' });
+    res.status(200).json({ message: 'Task deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 // Filter tasks by due date (today, this week, this month)
-const filterTasksByDueDate = async (req, res) => {
+const filterTodoByDueDate = async (req, res) => {
   const { timeframe } = req.params;
   let startDate, endDate;
 
@@ -132,10 +135,10 @@ const filterTasksByDueDate = async (req, res) => {
 
 module.exports = {
   createTodo,
-  getAllTasks,
-  getSingleTask,
-  updateTask,
-  deleteTask,
-  filterTasksByDueDate,
-  getAllTasksOfSingleUser
+  getAllTodo,
+  getShareTodo,
+  updateTodo,
+  deleteTodo,
+  filterTodoByDueDate,
+  getAllTodoOfSingleUser
 };

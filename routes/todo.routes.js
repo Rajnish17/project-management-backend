@@ -4,22 +4,22 @@ const {verifyToken} =require("../middleware/verifyToken");
 
 const {
     createTodo,
-    getAllTasks,
-    getSingleTask,
-    updateTask,
-    deleteTask,
-    filterTasksByDueDate,
-    getAllTasksOfSingleUser
+    getAllTodo,
+    getShareTodo,
+    updateTodo,
+    deleteTodo,
+    filterTodoByDueDate,
+    getAllTodoOfSingleUser
 } =require("../controllers/todo.controller");
 
 
 router.post("/add",verifyToken,createTodo);
-router.get("/getall",getAllTasks);
-router.get("/getall/:id",verifyToken,getAllTasksOfSingleUser);
-router.get("/getone/:id",getSingleTask);
-router.patch("/update/:id",updateTask);
-router.delete("/delete/:id",deleteTask);
-router.get("/filter/:timeframe",filterTasksByDueDate);
+// router.get("/getall",getAllTodo);
+router.get("/getall/:id",verifyToken,getAllTodoOfSingleUser);
+router.get("/getone/:id",getShareTodo);
+router.patch("/update/:id",updateTodo);
+router.delete("/delete/:id",verifyToken,deleteTodo);
+router.get("/filter/:timeframe",filterTodoByDueDate);
 
 
 
