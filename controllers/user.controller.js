@@ -141,12 +141,19 @@ const updateUserDetails = async (req, res) => {
 
         if (newPassword !== undefined) {
             // Check if old password is provided
+            if(newPassword.length <= 8){
+                return res.status(400).json({
+                    success: false,
+                    message: 'new password should be greater then 8 character',
+                });
+            };
             if (!oldPassword) {
                 return res.status(400).json({
                     success: false,
                     message: 'Old password is required for password update.',
                 });
             }
+            
             // Check if the old password matches
             const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
             if (!isPasswordMatch) {
