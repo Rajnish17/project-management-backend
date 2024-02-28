@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const User=require("./user.model");
 
-const todoSchema = new mongoose.Schema({
+const DoneSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true
@@ -24,6 +24,6 @@ const todoSchema = new mongoose.Schema({
 });
 
 
-const Todo = mongoose.model('Todo', todoSchema);
+const Done = mongoose.model('Done', DoneSchema);
 
-module.exports = Todo;
+module.exports = Done;
