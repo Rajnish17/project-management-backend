@@ -112,26 +112,29 @@ const filterTodoByDueDate = async (req, res) => {
     endDate.setHours(23, 59, 59, 999);
   } else if (timeframe === 'thisweek') {
     startDate = new Date();
+    startDate.setDate(startDate.getDate() - 6); // Set startDate to 7 days ago
     startDate.setHours(0, 0, 0, 0);
     endDate = new Date();
-    endDate.setDate(endDate.getDate() + (7 - endDate.getDay()));
     endDate.setHours(23, 59, 59, 999);
   } else if (timeframe === 'thismonth') {
     startDate = new Date();
+    startDate.setDate(startDate.getDate() - 60); // Set startDate to the first day of the current month
     startDate.setHours(0, 0, 0, 0);
-    endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+    endDate = new Date();
     endDate.setHours(23, 59, 59, 999);
   } else {
     return res.status(400).json({ message: 'Invalid timeframe' });
   }
 
   try {
-    const tasks = await Todo.find({ dueDate: { $gte: startDate, $lte: endDate } });
+    const tasks = await Todo.find({ createdAt: { $gte: startDate, $lte: endDate } });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
+
 
 module.exports = {
   createTodo,

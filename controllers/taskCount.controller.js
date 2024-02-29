@@ -58,4 +58,33 @@ const CountAllTasks = async (req, res) => {
     }
 };
 
-module.exports = CountAllTasks;
+
+
+const ShareTodo = async (req, res) => {
+    try {
+      const taskId = req.params.id;
+      const todo = await Todo.findById(taskId);
+      const backlog = await Backlog.findById(taskId);
+      const progress = await Progress.findById(taskId);
+      const done = await Done.findById(taskId);
+  
+     
+
+      if(todo){
+        return res.status(200).json({task:todo});
+      }else if(backlog){
+        return res.status(200).json({task:backlog});
+      }else if(progress){
+        return res.status(200).json({task:progress});
+      }else if(done){
+        return res.status(200).json({task:done});
+      }
+  
+    } catch (error) {
+      console.error("Error sharing todo:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  };
+  
+
+module.exports = {CountAllTasks, ShareTodo};
