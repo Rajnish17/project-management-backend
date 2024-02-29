@@ -7,6 +7,7 @@ const backlogRoutes = require("./routes/backlog.routes");
 const progressRoutes = require("./routes/progress.routes");
 const doneRoutes = require("./routes/done.routes");
 const taskRoutes = require("./routes/taskCount.routes");
+const addToAllTodoRoutes = require("./routes/addToAllTodo.routes");
 
 
 
@@ -23,6 +24,7 @@ app.use("/backlog",backlogRoutes);
 app.use("/progress",progressRoutes);
 app.use("/done",doneRoutes);
 app.use(taskRoutes);
+app.use(addToAllTodoRoutes);
 
 
 app.get("/",(req,res)=>{

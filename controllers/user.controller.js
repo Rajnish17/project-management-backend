@@ -144,7 +144,7 @@ const updateUserDetails = async (req, res) => {
             if(newPassword.length <= 8){
                 return res.status(400).json({
                     success: false,
-                    message: 'new password should be greater then 8 character',
+                    message: 'new password should be greater than 8 character',
                 });
             };
             if (!oldPassword) {
