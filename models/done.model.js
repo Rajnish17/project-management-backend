@@ -21,7 +21,7 @@ const DoneSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
-});
+},{timestamps: true});
 
 
 const Done = mongoose.model('Done', DoneSchema);

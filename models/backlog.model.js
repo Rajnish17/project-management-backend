@@ -21,7 +21,7 @@ const BacklogSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
-});
+},{timestamps: true});
 
 
 const Backlog = mongoose.model('Backlog', BacklogSchema);
